@@ -1,0 +1,28 @@
+  .stage{
+    height: 130px;
+    perspective: 600px;
+  }
+
+  .rring{
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+  }
+
+  .rring .char, .rring .char2{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform-style: preserve-3d;
+    font-weight:700;
+    font-size: var(--font-size);
+    white-space: pre;
+    user-select: none;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0;
+  }
+
+  .stage:hover .ring{ animation-play-state: paused;}

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css')}}"/>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    {% block head_scripts %}{% endblock %}
+    {% block style %}{% endblock %}
+</head>
+<body>
+    {% block main required %}{% endblock %}
+    
+    {% block body_scripts %}{% endblock %}
+</body>
+</html>

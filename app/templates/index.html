@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block head_scripts %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/circle.css') }}"/>
+    <script src="{{ url_for('static', filename='scripts/main.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='scripts/circle-header.js') }}" defer></script>
+{% endblock %}
+
+{% block style %}
+<style>
+    @font-face {
+        font-family: "Lexend";
+        src: url('{{ url_for("static", filename="fonts/Lexend/Lexend-VariableFont_wght.ttf") }}');
+    }
+    @font-face {
+        font-family: "Silkscreen";
+        src: url('{{ url_for("static", filename="fonts/Silkscreen/Silkscreen-Regular.ttf") }}');
+    }
+</style>
+{% endblock %}
+
+{% block title %}{{ title }}{% endblock %}
+
+
+{% block main %}
+    <main>
+        <header class="stage" aria-hidden="false">
+            <h1 class="rring" id="ring"></h1>
+        </header>
+        <section>
+            <div id="board">
+                {% for i in range(3) %}
+                    {% for j in range(3) %}
+                        <div class="cell {{ 'x' if board[i][j]==1}} {{ 'o' if board[i][j]==-1  }}" data-index="{{ i*3 + j }}"></div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+    <nav class="m-4">
+        {% if pred %}
+            <i>{{ pred }}</i>
+        {% endif %}
+    </nav>
+{% endblock %}
