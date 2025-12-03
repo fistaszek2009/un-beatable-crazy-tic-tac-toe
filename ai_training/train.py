@@ -4,29 +4,9 @@ import torch
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 from model.cnn import XOClassifier
-from PIL import Image, ImageOps
 from tqdm import tqdm
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
-
-
-# --- AUTOCROP (musi być globalnie dla Windowsa) -----------------------------
-
-def autocrop_white(img: Image.Image):
-    if img.mode != "L":
-        img = img.convert("L")
-    inv = ImageOps.invert(img)
-    bbox = inv.getbbox()
-    if bbox:
-        return img.crop(bbox)
-    return img
-
-
-def autocrop_white_transform(img):
-    return autocrop_white(img)
-
-
-# --- GLOBALNE TRANSFORMY ----------------------------------------------------
 
 train_transform = transforms.Compose([
     transforms.Grayscale(num_output_channels=1),
@@ -42,13 +22,6 @@ test_transform = transforms.Compose([
     transforms.Normalize((0.5,), (0.5,))
 ])
 
-# transforms.RandomRotation(10),
-# transforms.RandomPerspective(distortion_scale=0.1, p=0.3),
-
-
-
-# --- EVALUATION --------------------------------------------------------------
-
 def evaluate(model, loader):
     model.eval()
     correct = 0
@@ -63,11 +36,7 @@ def evaluate(model, loader):
             total += labels.size(0)
     return correct / total if total > 0 else 0
 
-
-# --- MAIN TRAINING LOOP ------------------------------------------------------
-
 def main(args):
-    # datasety
     train_ds = datasets.ImageFolder(args.data_dir, transform=train_transform)
 
     train_loader = DataLoader(
@@ -88,12 +57,10 @@ def main(args):
     else:
         test_loader = None
 
-    # model
     model = XOClassifier().to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
     loss_fn = torch.nn.CrossEntropyLoss()
 
-    # --- TRENING ---
     for epoch in range(args.epochs):
         model.train()
         running = 0.0
@@ -105,7 +72,7 @@ def main(args):
             labels = labels.to(device)
 
             out = model(imgs)
-            loss = loss_fn(out, labels)
+            loss = loss_fn(out,labels)
 
             optimizer.zero_grad()
             loss.backward()
@@ -114,7 +81,6 @@ def main(args):
             running += loss.item()
             pbar.set_postfix(loss=running / (pbar.n + 1))
 
-        # eval
         train_acc = evaluate(model, train_loader)
         test_acc = evaluate(model, test_loader) if test_loader else None
 
@@ -123,22 +89,18 @@ def main(args):
             msg += f" | test_acc={test_acc:.3f}"
         print(msg)
 
-    # SAVE MODEL
     os.makedirs("model", exist_ok=True)
     torch.save(model.state_dict(), "model/weights.pth")
-    print("Model zapisany: model/weights.pth")
+    print("Model saved: model/weights.pth")
 
     if test_loader:
         print("Final test accuracy:", evaluate(model, test_loader))
-
-
-# --- ENTRYPOINT --------------------------------------------------------------
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_dir", type=str, default="ai_training/dataset")
     parser.add_argument("--test_dir", type=str, default="ai_training/testset")
-    parser.add_argument("--epochs", type=int, default=20)
+    parser.add_argument("--epochs", type=int, default=16)
     parser.add_argument("--batch_size", type=int, default=32)
     parser.add_argument("--lr", type=float, default=1e-3)
     args = parser.parse_args()

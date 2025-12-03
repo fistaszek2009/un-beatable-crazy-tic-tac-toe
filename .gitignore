@@ -1,2 +1,6 @@
 .venv
 __pycache__
+*/dataset/O/*
+*/dataset/X/*
+*/testset/O/*
+*/testset/X/*

@@ -9,7 +9,6 @@ class XOClassifier(nn.Module):
         self.conv2 = nn.Conv2d(16, 32, 3, padding=1)
         self.conv3 = nn.Conv2d(32, 64, 3, padding=1)
 
-        # 64x64 -> pool -> 32x32 -> pool -> 16x16 -> pool -> 8x8
         self.fc1 = nn.Linear(64 * 8 * 8, 128)
         self.fc2 = nn.Linear(128, 2)
 

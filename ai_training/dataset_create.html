@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creating dataset</title>
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing: border-box;
+        }
+        body{
+            background-color: beige;
+            display: flex;
+            gap:8px;
+            padding:0.5em;
+        }
+        canvas{
+            background-color: white;
+            border:1px solid black;
+            cursor:crosshair;
+        }
+        .controls{
+            width:100px;
+            display: flex;
+            flex-direction: column;
+            gap:3px;
+        }
+        label{
+            display: flex;
+            gap:10px;
+            & input, select, b{
+                width:45px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas width="220" height="220"></canvas>
+    <div class="controls">
+        <label for="type">
+            <b>Type:</b>
+            <select id="type">
+                <option value="x">x</option>
+                <option value="o">o</option>
+            </select>
+        </label>
+        <label for="suffix">
+            <b>Suffix:</b>
+            <input type="text" value="0" id="suffix"/>
+        </label>
+        <button id="save">Save image</button>
+        <button id="clear">Clear image</button>
+    </div>
+    <script>
+        const canvas = document.querySelector("canvas")
+        const ctx = canvas.getContext("2d")
+
+        ctx.lineWidth = 4
+        ctx.strokeStyle = "black"
+
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const saveBtn = document.querySelector("#save")
+        const clearBtn = document.querySelector("#clear")
+        const type = document.querySelector("#type")
+        const suffix = document.querySelector("#suffix")
+        loadSuffixes()
+
+        let drawing = false
+        let last = { x: 0, y: 0 }
+
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect()
+            return {
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
+            }
+        }
+
+        canvas.addEventListener("pointerdown", e => {
+            drawing = true
+            last = getPos(e)
+            ctx.beginPath()
+            ctx.moveTo(last.x, last.y)
+        })
+
+        canvas.addEventListener("pointermove", e => {
+            if (!drawing) return
+            const pos = getPos(e)
+            ctx.lineTo(pos.x,pos.y)
+            ctx.stroke()
+            last = pos
+        })
+
+        function endStroke(e) {
+            if (!drawing) return
+            drawing = false
+            ctx.stroke()
+        }
+
+        const save = () => {
+            const imgUrl = canvas.toDataURL("image/png")
+            const kind = type.value.toLowerCase()
+
+            let count = loadSuffixes()
+            const filename = `${kind}${count}.png`
+            count++
+            suffix.value = count
+            saveSuffixes()
+            
+
+            const a = document.createElement("a")
+            a.href = imgUrl
+            a.download = filename
+            a.click()
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        }
+
+        const clear = () => {
+            ctx.stroke()
+            ctx.clearRect(0,0,canvas.width,canvas.height)
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        canvas.addEventListener("pointerup", endStroke)
+        canvas.addEventListener("pointercancel", endStroke)
+        canvas.addEventListener("pointerleave", endStroke)
+
+        saveBtn.addEventListener("click", save)
+        document.addEventListener("keydown", (e)=>{
+            if(e.key==" ") save()
+        })
+
+        clearBtn.addEventListener("click", clear)
+
+        canvas.addEventListener("dblclick",()=>{
+            localStorage.clear()
+            localStorage.setItem("count_x",0)
+            localStorage.setItem("count_o",0)
+            loadSuffixes()
+        })
+    
+        function saveSuffixes(){
+            localStorage.setItem(`count_${type.value}`,suffix.value)
+        }
+
+        function loadSuffixes(){
+            let storageSuffix = localStorage.getItem(`count_${type.value}`) || 0
+            storageSuffix = parseInt(storageSuffix)
+            suffix.value = storageSuffix
+            return storageSuffix
+        }
+        
+        type.addEventListener("change",loadSuffixes)
+        suffix.addEventListener("input",saveSuffixes)
+    </script>
+</body>
+</html>

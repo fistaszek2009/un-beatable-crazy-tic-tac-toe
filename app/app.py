@@ -15,7 +15,7 @@ model.eval()
 
 transform = T.Compose([
     T.Grayscale(),
-    T.Resize((112,112)),
+    T.Resize((64,64)),
     T.ToTensor()
 ])
 
@@ -64,8 +64,7 @@ def predict():
         out = model(img)
         label = out.argmax(dim=1).item()
 
-    #return jsonify({"prediction": "X" if label == 0 else "O"})
-    render_template('index.html', board=game.board, title="prediction",pred=label)
+    return jsonify({"prediction": "X" if label == 0 else "O"})
 
 @app.route('/reset')
 def reset():
