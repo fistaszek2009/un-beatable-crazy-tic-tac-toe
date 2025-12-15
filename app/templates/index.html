@@ -4,6 +4,11 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/circle.css') }}"/>
     <script src="{{ url_for('static', filename='scripts/main.js') }}" defer></script>
     <script src="{{ url_for('static', filename='scripts/circle-header.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='scripts/draw.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='scripts/ui.js') }}" defer></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/roughjs@4.4.1/bundled/rough.min.js"></script>
+
 {% endblock %}
 
 {% block style %}
@@ -27,14 +32,44 @@
         <header class="stage" aria-hidden="false">
             <h1 class="rring" id="ring"></h1>
         </header>
-        <section>
+        <section class="game">
             <div id="board">
                 {% for i in range(3) %}
                     {% for j in range(3) %}
-                        <div class="cell {{ 'x' if board[i][j]==1}} {{ 'o' if board[i][j]==-1  }}" data-index="{{ i*3 + j }}"></div>
+                        <div class="cell {{ 'x' if board[i][j]==1}} {{ 'o' if board[i][j]==-1  }}" data-index="{{ i*3 + j }}">
+                            <canvas width="120" height="120"></canvas>
+                        </div>
                     {% endfor %}
                 {% endfor %}
+                <svg id="grid-svg" viewBox="0 0 360 360" preserveAspectRatio="none"></svg>
             </div>
         </section>
+        <nav>
+            <button id="cancel-button" >Cancel move</button>
+            <button id="submit-button" >Submit move</button>
+        </nav>
+        <div class="background-description">
+            <div>
+                <span class="title" ></span>
+                <span class="author" ></span>
+            </div>
+            <span class="origin" ></span>
+        </div>
     </main>
+    {% if won %}
+        <div class="won-screen">
+        <section>
+
+            {% if won != 0 %}
+            <h2>{% if won == 1 %}X{% else %}O{% endif %} won!</h2>
+            {% else %}
+            <h2>It's a draw!</h2>
+            {% endif %}
+
+            <a href="/reset">Play again</a>
+        </section>
+    </div>
+    {% endif %}
 {% endblock %}
+
+

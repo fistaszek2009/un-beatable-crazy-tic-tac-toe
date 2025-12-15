@@ -70,9 +70,7 @@ def predict():
 def reset():
     game.print()
     game.reset()
-    return redirect(url_for('main'))
-
-# "/tutorial"
+    return render_template("reset.html",title="Reset")
 
 if __name__=="__main__":
     app.run(debug=True)

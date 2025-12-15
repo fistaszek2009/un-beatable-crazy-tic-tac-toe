@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block style %}
+    <style>
+        body{
+        min-height:100vh;
+        background-color:#243123ff;
+    }
+    </style>
+{% endblock %}
+
+{% block main %}
+    <script>
+        localStorage.clear()
+        window.location.href = "/"
+    </script>
+{% endblock %}
+
+

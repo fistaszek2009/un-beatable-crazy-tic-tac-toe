@@ -1,18 +1,13 @@
-const canvas = document.querySelector("canvas")
-const ctx = canvas.getContext("2d")
+let drawing = []
+let currentId = undefined
+const canvases = document.querySelectorAll("#board canvas")
+const ctxes = Array(canvases.length)
 
-ctx.lineWidth = 4
-ctx.strokeStyle = "black"
+const nav = document.querySelector("nav")
+const cancelDrawingBtn = document.querySelector("nav #cancel-button")
+const submitDrawingBtn = document.querySelector("nav #submit-button")
 
-ctx.fillStyle = "white";
-ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-const type = document.querySelector("#type")
-
-let drawing = false
-let last = { x: 0, y: 0 }
-
-function getPos(e) {
+function getPos(e,canvas) {
     const rect = canvas.getBoundingClientRect()
     return {
         x: e.clientX - rect.left,
@@ -20,30 +15,68 @@ function getPos(e) {
     }
 }
 
-canvas.addEventListener("pointerdown", e => {
-    drawing = true
-    last = getPos(e)
-    ctx.beginPath()
-    ctx.moveTo(last.x, last.y)
-})
-
-canvas.addEventListener("pointermove", e => {
-    if (!drawing) return
-    const pos = getPos(e)
-    ctx.lineTo(pos.x,pos.y)
-    ctx.stroke()
-    last = pos
-})
-
-function endStroke(e) {
-    if (!drawing) return
-    drawing = false
+function endStroke(ctx,ind) {
+    if (!drawing[ind]) return
+    drawing[ind] = false
     ctx.stroke()
 }
 
-canvas.addEventListener("pointerup", endStroke)
-canvas.addEventListener("pointercancel", endStroke)
-canvas.addEventListener("pointerleave", endStroke)
+function addEventListenersToCanvas(canvas,ctx,ind,fill){
+    drawing.push(false)
 
-saveBtn.addEventListener("click", save)
-document.addEventListener("keydown", save)
+    ctx.lineWidth = 4
+    ctx.strokeStyle = "#691d1dff"
+
+    ctx.fillStyle = "white";
+    if(fill)ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    canvas.addEventListener("pointerdown", (e) => {
+        if(currentId == undefined || currentId == ind){
+            currentId = ind
+            drawing[ind] = true
+            const pos = getPos(e,canvas)
+            ctx.beginPath()
+            ctx.moveTo(pos.x,pos.y)
+            buttonDeactivation(active=true)
+        }
+    })
+
+    canvas.addEventListener("pointermove", (e) => { 
+        if (!drawing[ind]) return
+        const pos = getPos(e,canvas)
+        ctx.lineTo(pos.x,pos.y)
+        ctx.stroke()
+    })
+
+    canvas.addEventListener("pointerup", ()=>endStroke(ctx,ind))
+    canvas.addEventListener("pointercancel", ()=>endStroke(ctx,ind))
+    canvas.addEventListener("pointerleave", ()=>endStroke(ctx,ind))
+}
+
+function buttonDeactivation(active=false){
+    submitDrawingBtn.style.cursor = cancelDrawingBtn.style.cursor = active ? "pointer":"default"
+    submitDrawingBtn.disabled = cancelDrawingBtn.disabled = active ? false : true
+    nav.style.opacity = active ? 1 : 0
+}
+
+function submitDrawing(){
+    alert("ala")
+    buttonDeactivation()
+}
+
+function cancelDrawing(){
+    ctxes[currentId].clearRect(0,0,canvases[currentId].width,canvases[currentId].height)
+    currentId = undefined
+    nav.style.opacity = 0
+    buttonDeactivation()
+}
+
+canvases.forEach((canvas,ind)=>{
+    ctx = canvas.getContext('2d')
+    ctxes[ind] = ctx
+    addEventListenersToCanvas(canvas,ctx,ind,false)
+})
+
+cancelDrawingBtn.addEventListener("click",cancelDrawing)
+submitDrawingBtn.addEventListener("click",submitDrawing)
+buttonDeactivation()

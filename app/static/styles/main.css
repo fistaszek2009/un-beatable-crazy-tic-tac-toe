@@ -1,26 +1,38 @@
 :root{
     --soft-linen: #eee7daff;
+    --soft-linen-200: rgba(238, 231, 218, 0.2);
+    --soft-linen-300: rgba(238, 231, 218, 0.3);
     --primary-scarlet: #de1a1aff;
     --black-cherry: #691d1dff;
     --honey-bronze: #eac070ff;
     --evergreen: #243123ff;
 }
 
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
 body{
-    background-color: var(--primary-scarlet);
+    background-color: var(--evergreen);
 }
 
 main{
+    padding:1em;
     width:100%;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    background-position: center;
+    background-size: cover;
+    position: relative;
 }
 
 .rring{
-    font-family: 'Silkscreen';
+    font-family: 'Silkscreen', Helvetica, sans-serif;
     & .char{
         color:var(--soft-linen);
         background-color: var(--black-cherry);
@@ -34,28 +46,144 @@ main{
 #board { 
     display: grid; 
     grid-template-columns: repeat(3, 120px);
-    gap:3px;
-    border: 2px solid var(--soft-linen);
-    border-radius: 20px;
-    background-color: var(--soft-linen);
-    overflow: hidden;
+    gap:5px;
+    position: relative;
+    padding: 0.5em;
+    background-color: var(--soft-linen-200);
+    backdrop-filter: blur(3px);
+    border-radius:2rem;
+    box-shadow:
+    1px 10px 15px 5px rgba(4, 4, 4, 0.5),
+    inset 2px 3px 20px 0px rgba(255, 255, 255, 0.6);
 }
 
 .cell {
     width: 120px;
     height: 120px;
     font-size: 60px;
-    text-align: center;
-    line-height: 120px;
-    color:var(--soft-linen);
+    color:var(--evergreen);
     cursor: pointer;
-    background-color: var(--primary-scarlet);
+    position: relative;
+    z-index: 10;
 }
 
-.x::before{
+#grid-svg {
+    width:100%;
+    height:100%;
+    position: absolute;
+    top:50%;
+    left:50%;
+    transform: translate(-50%,-50%);
+    z-index: 2;
+    pointer-events: none;
+  }
+
+.x::before, .o::before{
+    font-family: 'Silkscreen', Helvetica, sans-serif;
     content:"x";
+    font-size: 1em;
+    height:100%;
+    aspect-ratio: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top:0;
+    left:0;
+    opacity:0.6;
+    color:var(--evergreen);
+}
+.o::before{content:"o";}
+
+nav{
+    padding:1em;
+    padding-top: 1.5em;
+    display: flex;
+    gap:1em;
+    justify-content: center;
+    opacity: 0;
+    transition: 0.5s;
 }
 
-.o::before{
-    content:"o";
+button, a{
+        font-size:1em;
+        cursor:pointer;
+        padding:0.4em 1em;
+        border-radius:10px;
+        font-family: "Lexend",monospace;
+        color: var(--soft-linen);
+        border:none;
+        box-shadow:
+        0px 5px 12px 2px rgba(0,0,0,0.6),
+        inset 2px 2px 4px 0px rgba(255,255,255,0.4),
+        inset -2px -2px 4px 0px rgba(0, 0, 0, 0.3);
+        transition: 0.4s;
+        &:hover{
+            color:var(--honey-bronze);
+        }
+        &:active{
+            box-shadow:
+        0px 2px 9px 2px rgba(0,0,0,0.6),
+        inset 1.5px 1.5px 4px 0px rgba(255,255,255,0.4),
+        inset -1.5px -1.5px 4px 0px rgba(0, 0, 0, 0.3);
+            transform: scale(0.9) translate(4px,2px);
+        }
+    }
+
+#cancel-button{background-color: var(--black-cherry);}
+#submit-button{background-color: var(--evergreen);}
+
+.won-screen{
+    width:100%;
+    height:100vh;
+    backdrop-filter: blur(5px);
+    position: fixed;
+    z-index: 1;
+    top:0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--soft-linen-300);
+}
+
+.won-screen section{
+    display: flex;
+    flex-direction: column;
+    gap:1em;
+    align-items: center;
+    & h2{
+        font-family: 'Silkscreen', Helvetica, sans-serif;
+        font-size: 2.75em;
+        color:var(--evergreen);
+    }
+    & a{
+        background-color: var(--honey-bronze);
+        color:var(--evergreen);
+        font-weight:600;
+        text-decoration: none;
+        &:hover{color:var(--black-cherry)}
+    }
+}
+
+.background-description{
+    position: absolute;
+    bottom:1em;
+    right:1em;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap:0.1em;
+    font-size:0.7em;
+    padding:0.5em 1em;
+    border-radius:5px;
+    font-family: "Lexend",monospace;
+    background-color: var(--soft-linen-200);
+    color:var(--soft-linen);
+    backdrop-filter: blur(3px);
+    box-shadow:
+    1px 5px 10px 3px rgba(4, 4, 4, 0.4),
+    inset 1px 1px 7px 0px rgba(255, 255, 255, 0.4);
+    & .title{
+        font-weight: 700;
+    }
 }

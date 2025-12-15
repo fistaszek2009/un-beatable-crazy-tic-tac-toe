@@ -1,6 +1,6 @@
 const text = "Unbeatable crazy tic-tac-toe" + " "
 const fontSize = 28
-const r = 140 + fontSize
+const r = 180
 const speed = -0.4
 
 let chars = text.split("")
@@ -58,9 +58,4 @@ function rotate(){
 
 layoutChars()
 requestAnimationFrame(rotate)
-
-// window.addEventListener('resize', () => {
-//   layoutChars();
-// });
-
 
