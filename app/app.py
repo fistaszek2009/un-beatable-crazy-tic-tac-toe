@@ -21,56 +21,68 @@ transform = T.Compose([
 
 @app.route("/")
 def main():
-    return render_template('index.html', board=game.board, title="Main")
+    return render_template('index.html', board=game.board, title="Unbeatable crazy tic-tac-toe")
 
-@app.route("/move", methods=["POST"])
+@app.route("/move-bot", methods=["POST"])
 def move():
-    if game.gameRunning:
-        data = request.get_json()
-        is_player_turn = bool(data.get("player"))
+    if not game.gameRunning:
+        return jsonify(error="Game finished"), 400
 
-        if is_player_turn and game.currentSign==1:
-            #pobieranie dla obrazka i ustalnie signu
-            pos = int(data.get("pos"))
-            game.insert(pos)
-        else:
-            (x,y),_ = game.minmax(game.currentSign == 1,0,game.board)
-            game.insert(x*3+y)
-
-        win = game.checkWin(game.board)
-        anyEmpty = any(cell == 0 for row in game.board for cell in row)
-
-        if win == 0 and anyEmpty:
-                game.currentSign = -game.currentSign
-        else:
-            game.gameRunning = False
-
-        game.print()
+    (x,y), _ = game.minmax(game.currentSign == -1, 0, game.board)
+    game.insert(x*3+y)
 
     return jsonify({
         "board": game.board,
         "win": game.checkWin(game.board),
         "anyEmpty": any(cell == 0 for row in game.board for cell in row)
-    }
-)
+    })
 
-@app.route("/predict", methods=["GET","POST"])
-def predict():
-    file = request.files["file"]
-    img = Image.open(io.BytesIO(file.read()))
+# import random
+# from PIL import Image
+
+# def random_mark(sign):
+#     folder = "ai_marks/X" if sign == 1 else "ai_marks/O"
+#     file = random.choice(os.listdir(folder))
+#     return Image.open(os.path.join(folder, file))
+
+@app.route("/move-image", methods=["POST"])
+def move_image():
+    if not game.gameRunning:
+        return jsonify(error="Game finished"), 400
+
+    img_file = request.files["image"]
+    pos = int(request.form["pos"])
+
+    img = Image.open(img_file.stream)
     img = transform(img).unsqueeze(0)
 
     with torch.no_grad():
         out = model(img)
-        label = out.argmax(dim=1).item()
+        pred = out.argmax(dim=1).item()
 
-    return jsonify({"prediction": "X" if label == 0 else "O"})
+    sign = 1 if pred == 1 else -1  # X = 1, O = -1
+
+    if game.board[pos//3][pos%3] != 0:
+        return jsonify(error="Cell occupied"), 409
+
+    game.currentSign = sign
+    game.insert(pos)
+
+    game.currentSign *= -1
+
+    return jsonify({
+        "board": game.board,
+        "win": game.checkWin(game.board),
+        "anyEmpty": any(cell == 0 for row in game.board for cell in row)
+    })
 
 @app.route('/reset')
 def reset():
     game.print()
     game.reset()
-    return render_template("reset.html",title="Reset")
+    return render_template("reset.html",title="Unbeatable crazy tic-tac-toe")
 
 if __name__=="__main__":
     app.run(debug=True)
+    # TODO changing serving server
+

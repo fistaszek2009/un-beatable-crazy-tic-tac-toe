@@ -4,11 +4,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/circle.css') }}"/>
     <script src="{{ url_for('static', filename='scripts/main.js') }}" defer></script>
     <script src="{{ url_for('static', filename='scripts/circle-header.js') }}" defer></script>
-    <script src="{{ url_for('static', filename='scripts/draw.js') }}" defer></script>
     <script src="{{ url_for('static', filename='scripts/ui.js') }}" defer></script>
 
     <script src="https://cdn.jsdelivr.net/npm/roughjs@4.4.1/bundled/rough.min.js"></script>
-
 {% endblock %}
 
 {% block style %}
@@ -56,20 +54,12 @@
             <span class="origin" ></span>
         </div>
     </main>
-    {% if won %}
         <div class="won-screen">
         <section>
-
-            {% if won != 0 %}
-            <h2>{% if won == 1 %}X{% else %}O{% endif %} won!</h2>
-            {% else %}
-            <h2>It's a draw!</h2>
-            {% endif %}
-
+            <h2></h2>
             <a href="/reset">Play again</a>
         </section>
     </div>
-    {% endif %}
 {% endblock %}
 
 

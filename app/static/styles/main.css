@@ -90,7 +90,7 @@ main{
     position: absolute;
     top:0;
     left:0;
-    opacity:0.6;
+    opacity:0.45;
     color:var(--evergreen);
 }
 .o::before{content:"o";}
@@ -103,6 +103,8 @@ nav{
     justify-content: center;
     opacity: 0;
     transition: 0.5s;
+    z-index: 1;
+    margin-bottom: 2em;
 }
 
 button, a{
@@ -140,7 +142,7 @@ button, a{
     position: fixed;
     z-index: 1;
     top:0;
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
     background-color: var(--soft-linen-300);
@@ -183,7 +185,10 @@ button, a{
     box-shadow:
     1px 5px 10px 3px rgba(4, 4, 4, 0.4),
     inset 1px 1px 7px 0px rgba(255, 255, 255, 0.4);
-    & .title{
-        font-weight: 700;
-    }
+    & .title{font-weight: 700;}
+    & .origin{font-size: 0.66em;}
+}
+
+.locked {
+  pointer-events: none;
 }

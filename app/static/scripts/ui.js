@@ -58,7 +58,6 @@ function loadViewData(){
     if(data) processedData = data
     else{
         processedData.background = Math.floor(Math.random()*5)
-        console.log(processedData.background)
         processedData.grid = []
         for(let i=0; i<4; i++){
             processedData.grid.push({
@@ -78,7 +77,6 @@ function saveViewData(viewData){
 }
 
 function loadBackgroundInfo(viewData){
-    console.log(viewData.background)
     backgroundDescriptionTitle.innerText = descriptions[viewData.background].title
     backgroundDescriptionAuthor.innerText = descriptions[viewData.background].author
     backgroundDescriptionOrigin.innerText = descriptions[viewData.background].origin

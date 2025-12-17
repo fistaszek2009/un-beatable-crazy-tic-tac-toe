@@ -47,6 +47,12 @@ class TicTacToe():
         except:
             print("Problem with inserting position")
 
+        win = self.checkWin(self.board)
+        anyEmpty = any(cell == 0 for row in self.board for cell in row)
+
+        if win != 0 or not anyEmpty:
+            self.gameRunning = False
+
     def checkWin(self,board):
         for row in board:
             if(row[0] == row[1] and row[1] == row[2] and row[0] != 0):
