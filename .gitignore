@@ -1,4 +1,6 @@
 .venv
 __pycache__
-O/
-X/
+
+
+ai_training/**/?/*.png
+!ai_training/**/?/?[0-9].png
