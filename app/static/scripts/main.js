@@ -1,6 +1,5 @@
 let drawing = []
 let currentId = undefined
-let boardController = new AbortController();
 
 const canvases = document.querySelectorAll("#board canvas")
 const ctxes = Array(canvases.length)
@@ -8,7 +7,6 @@ const ctxes = Array(canvases.length)
 const nav = document.querySelector("nav")
 const cancelDrawingBtn = document.querySelector("nav #cancel-button")
 const submitDrawingBtn = document.querySelector("nav #submit-button")
-
 const wonScreen = document.querySelector(".won-screen")
 
 function getPos(e,canvas) {
@@ -18,7 +16,6 @@ function getPos(e,canvas) {
         y: e.clientY - rect.top
     }
 }
-
 function endStroke(ctx,ind) {
     if (!drawing[ind]) return
     drawing[ind] = false
@@ -28,7 +25,7 @@ function endStroke(ctx,ind) {
 function addEventListenersToCanvas(canvas,ctx,ind,fill){
     drawing.push(false)
 
-    ctx.lineWidth = 4
+    ctx.lineWidth = 6; 
     ctx.strokeStyle = "#691d1dff"
 
     ctx.fillStyle = "white";
@@ -64,16 +61,22 @@ function buttonDeactivation(active=false){
 }
 
 async function submitDrawing(){
-    await submitMove(currentId)
+    let end = await submitMove(currentId)
     buttonDeactivation()
-    lockElement("#board",true);
-    setTimeout(() => {botMove()}, 1000);
+    lockElement("#board", true);
+    if (!end) {
+        await sleep(1000);
+        end = await botMove();
+    }
+    if(!end) lockElement("#board", false);
 }
 
 function cancelDrawing(){
-    ctxes[currentId].clearRect(0,0,canvases[currentId].width,canvases[currentId].height)
+    if (typeof currentId !== 'undefined'){
+        ctxes[currentId].clearRect(0,0,canvases[currentId].width,canvases[currentId].height)
+        localStorage.removeItem(`ttt_canvas_${currentId}`)
+    }
     currentId = undefined
-    nav.style.opacity = 0
     buttonDeactivation()
 }
 
@@ -106,9 +109,48 @@ function canvasToWhitePNG(canvas) {
 }
 
 function lockElement(sel,state) {
-  document.querySelector(sel)
-    .classList.toggle("locked", state);
+  document.querySelector(sel).classList.toggle("locked", state);
 }
+
+function sleep(ms) {
+    return new Promise(r => setTimeout(r, ms));
+}
+
+function saveCanvasToLocal(index){
+    try{
+        const dataUrl = canvases[index].toDataURL("image/png");
+        localStorage.setItem(`ttt_canvas_${index}`, dataUrl);
+    }catch(e){
+        console.warn("Could not save canvas:", e);
+    }
+}
+
+function drawImageOnCanvas(index, dataUrl){
+    const canvas = canvases[index];
+    const ctx = ctxes[index];
+    const img = new Image();
+    img.onload = () =>{
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        const ratio = Math.min(canvas.width / img.width, canvas.height / img.height);
+        const w = img.width * ratio, h = img.height * ratio;
+        ctx.drawImage(img, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
+        saveCanvasToLocal(index);
+    }
+    img.src = dataUrl;
+}
+
+function restoreSavedCanvases(){
+    for(let i=0;i<canvases.length;i++){
+        const dataUrl = localStorage.getItem(`ttt_canvas_${i}`);
+        if(dataUrl) drawImageOnCanvas(i, dataUrl);
+    }
+}
+
+document.addEventListener('click', (e)=>{
+    if(e.target && e.target.matches("a[href='/reset']")){
+        for(let i=0;i<canvases.length;i++) localStorage.removeItem(`ttt_canvas_${i}`)
+    }
+})
 
 async function submitMove(cellIndex) {
 
@@ -131,35 +173,44 @@ async function submitMove(cellIndex) {
     const state = await res.json();
     if(state.error){
         console.error(state.error)
+       return true
     }
     else{
         updateBoard(state.board)
+        saveCanvasToLocal(cellIndex)
         currentId = undefined
-        if (state.win != 0 || !state.anyEmpty){
-            wonScreen.querySelector("h2").innerText = state.win == 0 ? "Is's a draw!" : state.win == -1 ? "O won!" : "X won!"
-            wonScreen.style.display = "flex"
-        }
+        handleGameEnd(state.win,state.anyEmpty, state.indexes)
+        return state.win !== 0 || !state.anyEmpty
    }
 
 }
 
 async function botMove() {
-
     const res = await fetch("/move-bot", { method: "POST" });
 
     const state = await res.json();
     if(state.error){
         console.error(state.error)
+        return true
     }
     else{
         updateBoard(state.board)
-        if (state.win != 0 || !state.anyEmpty){
-            wonScreen.querySelector("h2").innerText = state.win == 0 ? "Is's a draw!" : state.win == -1 ? "O won!" : "X won!"
-            wonScreen.style.display = "flex"
+        if(typeof state.pos !== 'undefined' && state.image){
+            drawImageOnCanvas(state.pos, state.image)
         }
+        handleGameEnd(state.win,state.anyEmpty, state.indexes)
+        return state.win !== 0 || !state.anyEmpty
    }
+}
 
-   lockElement("#board",false)
+function handleGameEnd(win,anyEmpty,indexes){
+    if (win != 0 || !anyEmpty){
+            lockElement("#board", true);
+            if(indexes !== -1) indexes.forEach(item=>{document.querySelector(`.cell[data-index="${item}"]`).classList.add("win-cell")})
+            setTimeout(() => {
+                wonScreen.querySelector("h2").innerText = win == 0 ? "Is's a draw!" : win == -1 ? "O won!" : "X won!"
+                wonScreen.style.display = "flex"
+            }, 1500);        }
 }
 
 canvases.forEach((canvas,ind)=>{
@@ -170,6 +221,8 @@ canvases.forEach((canvas,ind)=>{
 
 cancelDrawingBtn.addEventListener("click",cancelDrawing)
 submitDrawingBtn.addEventListener("click",async _ => submitDrawing())
+
+restoreSavedCanvases()
 buttonDeactivation()
 
 

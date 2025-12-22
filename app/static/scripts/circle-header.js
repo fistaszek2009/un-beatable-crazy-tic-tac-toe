@@ -1,4 +1,4 @@
-const text = "Unbeatable crazy tic-tac-toe" + " "
+const text = "(Un)beatable crazy tic-tac-toe" + " "
 const fontSize = 28
 const r = 180
 const speed = -0.4

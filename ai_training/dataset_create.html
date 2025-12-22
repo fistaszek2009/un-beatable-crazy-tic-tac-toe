@@ -22,7 +22,7 @@
             cursor:crosshair;
         }
         .controls{
-            width:100px;
+            width:130px;
             display: flex;
             flex-direction: column;
             gap:3px;
@@ -31,7 +31,7 @@
             display: flex;
             gap:10px;
             & input, select, b{
-                width:45px;
+                width:60px;
             }
         }
     </style>
@@ -50,6 +50,14 @@
             <b>Suffix:</b>
             <input type="text" value="0" id="suffix"/>
         </label>
+        <label for="boldness">
+            <b>Boldness:</b>
+            <input type="number" value="6" id="boldness"/>
+        </label>
+        <label for="color">
+            <b>Color:</b>
+            <input type="color" id="color"/>
+        </label>
         <button id="save">Save image</button>
         <button id="clear">Clear image</button>
     </div>
@@ -58,15 +66,17 @@
         const ctx = canvas.getContext("2d")
 
         ctx.lineWidth = 4
-        ctx.strokeStyle = "black"
+        ctx.strokeStyle = "#691d1dff"
 
         ctx.fillStyle = "white";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        //ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         const saveBtn = document.querySelector("#save")
         const clearBtn = document.querySelector("#clear")
         const type = document.querySelector("#type")
         const suffix = document.querySelector("#suffix")
+        const boldness = document.querySelector("#boldness")
+        const color = document.querySelector("#color")
         loadSuffixes()
 
         let drawing = false
@@ -111,21 +121,20 @@
             suffix.value = count
             saveSuffixes()
             
-
             const a = document.createElement("a")
             a.href = imgUrl
             a.download = filename
             a.click()
 
             ctx.clearRect(0, 0, canvas.width, canvas.height)
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            //ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         }
 
         const clear = () => {
             ctx.stroke()
             ctx.clearRect(0,0,canvas.width,canvas.height)
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            //ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
 
         canvas.addEventListener("pointerup", endStroke)
@@ -143,6 +152,8 @@
             localStorage.clear()
             localStorage.setItem("count_x",0)
             localStorage.setItem("count_o",0)
+            localStorage.setItem("boldness",6)
+            localStorage.setItem("color","#691d1dff")
             loadSuffixes()
         })
     
@@ -152,13 +163,41 @@
 
         function loadSuffixes(){
             let storageSuffix = localStorage.getItem(`count_${type.value}`) || 0
+            let storageBoldness= localStorage.getItem('boldness') || 6
+            let storageColor= localStorage.getItem('color') || "#691d1dff"
             storageSuffix = parseInt(storageSuffix)
+            storageBoldness = parseInt(storageBoldness)
             suffix.value = storageSuffix
+            boldness.value = storageBoldness
+            ctx.lineWidth = storageBoldness
+            color.value = storageColor
+            ctx.strokeStyle = storageColor
             return storageSuffix
         }
         
         type.addEventListener("change",loadSuffixes)
         suffix.addEventListener("input",saveSuffixes)
+
+        boldness.addEventListener("input",e=>{
+            if (!isNaN(e.target.value)){
+                const value = parseInt(e.target.value)
+                if(value<=0) e.target.value = 1
+                else if(value>10) e.target.value =10
+                localStorage.setItem("boldness", value)
+                ctx.lineWidth = value
+                }
+            else{
+                e.target.value = 1
+            }
+        })
+
+        color.addEventListener("input",e=>{
+            const value = e.target.value
+            localStorage.setItem("color", value)
+            ctx.strokeStyle = value
+        })
+
+
     </script>
 </body>
 </html>

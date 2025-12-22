@@ -10,7 +10,7 @@ class TicTacToe():
         self.currentSign = 1
         self.gameRunning = True
     
-    def demo(self):
+    def playInTerminal(self):
         while self.gameRunning:
             self.print()
 
@@ -21,7 +21,7 @@ class TicTacToe():
                 self.insert(x*3+y)
                 print("-"*30)
 
-            win = self.checkWin(self.board)
+            win, _ = self.checkWin(self.board)
 
             if win == 0 and any(cell == 0 for row in self.board for cell in row):
                 self.currentSign = -self.currentSign
@@ -38,7 +38,8 @@ class TicTacToe():
     def insert(self,where=None):
         if(where==None):
             print("Position of your move:")
-        print(where)
+            where = int(input())
+        
         try:
             if(where>=0 and where<9 and self.board[(where)//3][(where)%3] == 0):
                 self.board[(where)//3][(where)%3] = self.currentSign
@@ -47,26 +48,26 @@ class TicTacToe():
         except:
             print("Problem with inserting position")
 
-        win = self.checkWin(self.board)
+        win, _ = self.checkWin(self.board)
         anyEmpty = any(cell == 0 for row in self.board for cell in row)
 
         if win != 0 or not anyEmpty:
             self.gameRunning = False
 
     def checkWin(self,board):
-        for row in board:
-            if(row[0] == row[1] and row[1] == row[2] and row[0] != 0):
-                return row[0]
+        for i,row in enumerate(board):
+            if(row[0] != 0 and row[0] == row[1] and row[1] == row[2]):
+                return row[0], (i*3, 1+i*3, 2+i*3)
         
         for col in range(3):
             if(board[0][col] != 0 and board[0][col] == board[1][col] and board[1][col] == board[2][col]):
-                return board[0][col]
+                return board[0][col], (col, col+3, col+2*3)
         
         for i in range(0,3,2):
              if(board[0][2-i] != 0 and board[0][2-i]==board[1][1] and board[0][2-i] == board[2][i]):
-                return board[0][2-i]
+                return board[0][2-i], ((2-i), 4 , 2*3+i)
 
-        return 0
+        return 0,-1
     
     def print(self):
         for row in self.board:
@@ -79,7 +80,7 @@ class TicTacToe():
     def minmax(self,isMaximising, depth, board):
         # x - max, o - min
 
-        win = self.checkWin(board)
+        win, _ = self.checkWin(board)
         emptyExists = any(cell == 0 for row in board for cell in row)
 
         if win != 0:
@@ -112,4 +113,4 @@ class TicTacToe():
 
 if __name__ == "__main__":
     game = TicTacToe()
-    game.demo()
+    game.playInTerminal()

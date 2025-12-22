@@ -34,7 +34,7 @@
             <div id="board">
                 {% for i in range(3) %}
                     {% for j in range(3) %}
-                        <div class="cell {{ 'x' if board[i][j]==1}} {{ 'o' if board[i][j]==-1  }}" data-index="{{ i*3 + j }}">
+                        <div class="cell {{ 'x' if board[i][j]==1}} {{ 'o' if board[i][j]==-1  }} {{ 'win-cell' if i*3 + j in indexes }}" data-index="{{ i*3 + j }}">
                             <canvas width="120" height="120"></canvas>
                         </div>
                     {% endfor %}
@@ -54,9 +54,9 @@
             <span class="origin" ></span>
         </div>
     </main>
-        <div class="won-screen">
+    <div class="won-screen" style="display: {{'flex' if (win != 0 or not anyEmpty) else 'none'}}">
         <section>
-            <h2></h2>
+            <h2>{{"Is's a draw!" if win == 0 else  "O won!"  if win == -1 else "X won!" }}</h2>
             <a href="/reset">Play again</a>
         </section>
     </div>

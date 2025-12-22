@@ -5,18 +5,40 @@ from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 from model.cnn import XOClassifier
 from tqdm import tqdm
+from PIL import Image, ImageOps
+import numpy as np
+
+class WhiteBackground:
+    def __call__(self, img):
+        img = img.convert("RGBA")
+        white_bg = Image.new("RGBA", img.size, (255, 255, 255, 255))
+        img = Image.alpha_composite(white_bg, img)
+        img = img.convert("L")
+        if img.getextrema()[1] - img.getextrema()[0] > 0: 
+            img = ImageOps.autocontrast(img)
+        img_array = np.array(img)
+        mean_brightness = img_array.mean()
+    
+        if mean_brightness > 127:
+            img = ImageOps.invert(img)
+        fn = lambda x: 255 if x > 50 else 0
+        img = img.point(fn, mode='1')
+        img = img.convert("L")
+        
+        return img
+
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 train_transform = transforms.Compose([
-    transforms.Grayscale(num_output_channels=1),
+    WhiteBackground(),
     transforms.Resize((64, 64)),
     transforms.ToTensor(),
     transforms.Normalize((0.5,), (0.5,))
 ])
 
 test_transform = transforms.Compose([
-    transforms.Grayscale(num_output_channels=1),
+    WhiteBackground(),
     transforms.Resize((64, 64)),
     transforms.ToTensor(),
     transforms.Normalize((0.5,), (0.5,))
@@ -38,7 +60,7 @@ def evaluate(model, loader):
 
 def main(args):
     train_ds = datasets.ImageFolder(args.data_dir, transform=train_transform)
-
+    
     train_loader = DataLoader(
         train_ds,
         batch_size=args.batch_size,
