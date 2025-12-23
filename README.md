@@ -5,9 +5,11 @@
 ![Pytorch icon](https://img.shields.io/badge/-PyTorch-EF5233?logo=pytorch&logoColor=white&style=for-the-badge)
 ![JavaScript icon](https://img.shields.io/badge/-JavaScript-EFD81D?logo=javascript&logoColor=white&style=for-the-badge)
 
-https://github.com/fistaszek2009/un-beatable-crazy-tic-tac-toe/blob/app/gameplay.mp4
+https://github.com/user-attachments/assets/ae1c4c46-ed88-4e57-953c-4764a97bfadc
 
-introduction
+---
+
+Can simple tic-tac-toe game become crazy coding adventure? Of course! I have created...
 
 table of contents
 

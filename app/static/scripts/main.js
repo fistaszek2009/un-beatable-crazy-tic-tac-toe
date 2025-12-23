@@ -208,7 +208,7 @@ function handleGameEnd(win,anyEmpty,indexes){
             lockElement("#board", true);
             if(indexes !== -1) indexes.forEach(item=>{document.querySelector(`.cell[data-index="${item}"]`).classList.add("win-cell")})
             setTimeout(() => {
-                wonScreen.querySelector("h2").innerText = win == 0 ? "Is's a draw!" : win == -1 ? "O won!" : "X won!"
+                wonScreen.querySelector("h2").innerText = win == 0 ? "It's a draw!" : win == -1 ? "O won!" : "X won!"
                 wonScreen.style.display = "flex"
             }, 1500);        }
 }
