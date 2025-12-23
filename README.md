@@ -9,13 +9,47 @@ https://github.com/user-attachments/assets/ae1c4c46-ed88-4e57-953c-4764a97bfadc
 
 ---
 
-Can simple tic-tac-toe game become crazy coding adventure? Of course! I have created...
+Can simple tic-tac-toe game become *crazy coding adventure*? Of course! I have created realistic version of this game, where you can literally **draw your sign** and then try to beat (un)beatable **minimax bot**. One of the unexpected gameplay features is an opportunity to *"change" your sign while playing*. Do not be obvious with sign proper order, draw X when it is O's time! Make bot dizzy.
 
-table of contents
+---
 
-1. how to set up
-   1. model
-   2. app
-2. how to play
+# 1. Installing
+   ### 1. app
+   ### 2. model training
+            
+# 2. How to play
 
-files overview
+> [!NOTE]
+> Useful information that users should know, even when skimming content.
+
+> [!TIP]
+> Helpful advice for doing things better or more easily.
+
+> [!IMPORTANT]
+> Key information users need to know to achieve their goal.
+
+> [!WARNING]
+> Urgent info that needs immediate user attention to avoid problems.
+
+> [!CAUTION]
+> Advises about risks or negative outcomes of certain actions.
+
+# 3. Files overview
+```
+/un-beatable-crazy-tic-tac-toe
+├───ai_training      # classifier model training, datasets and tool for creating simple dataset samples
+│   ├───dataset
+│   │   ├───O
+│   │   └───X
+│   └───testset
+│       ├───O
+│       └───X
+├───app              # web app and game logic
+│   ├───static
+│   │   ├───fonts
+│   │   ├───images
+│   │   ├───scripts
+│   │   └───styles
+│   └───templates
+└───model            # cnn model class and weights
+```
