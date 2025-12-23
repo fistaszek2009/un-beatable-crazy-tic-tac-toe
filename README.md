@@ -5,7 +5,7 @@
 ![Pytorch icon](https://img.shields.io/badge/-PyTorch-EF5233?logo=pytorch&logoColor=white&style=for-the-badge)
 ![JavaScript icon](https://img.shields.io/badge/-JavaScript-EFD81D?logo=javascript&logoColor=white&style=for-the-badge)
 
-video
+https://github.com/fistaszek2009/un-beatable-crazy-tic-tac-toe/blob/app/gameplay.mp4
 
 introduction
 
