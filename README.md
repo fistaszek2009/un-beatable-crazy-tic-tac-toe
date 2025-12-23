@@ -69,6 +69,7 @@ python -m ai_training.train
 
 > [!IMPORTANT]
 > The datasets included in the repository are intentionally tiny and meant only as examples. Training on them will produce poor results. A larger, self-generated dataset is strongly recommended.
+>
 > In [ai_training/dataset_create.html](https://github.com/fistaszek2009/un-beatable-crazy-tic-tac-toe/blob/main/ai_training/dataset_create.html) directory you can find *very simple* (but helpful) tool for creating and downloading dataset samples.  
 
 ---
@@ -99,7 +100,7 @@ python -m ai_training.train
 > [!NOTE]
 > ## About game backgrounds
 >
-> The game board is displayed on digital artworks by **Polish masters of painting**.
+> The game board is displayed on artworks by **Polish masters of painting**.
 > I wanted to promote Polish art. I believe these are wonderful works that add deeper meaning and beauty to the design of my game.
 >
 > Used artworks:
