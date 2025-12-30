@@ -38,7 +38,13 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-(For Windows: `.venv\\Scripts\\activate`)
+Windows:
+
+```console
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+```
 
 #### Run the app
 
