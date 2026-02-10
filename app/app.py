@@ -12,6 +12,7 @@ from waitress import serve
 
 app = Flask(__name__)
 game = TicTacToe()
+server_session_id = id(app)
 
 model = XOClassifier()
 model.load_state_dict(torch.load("model/weights.pth", map_location="cpu"))
@@ -44,7 +45,11 @@ def random_mark(sign):
 @app.route("/")
 def main():
     win, indexes = game.checkWin(game.board)
-    return render_template('index.html', board=game.board, title="(Un)beatable crazy tic-tac-toe", win = win, anyEmpty = any(cell == 0 for row in game.board for cell in row), indexes = ([] if indexes == -1 else indexes))
+    return render_template('index.html', board=game.board, title="(Un)beatable crazy tic-tac-toe", win = win, anyEmpty = any(cell == 0 for row in game.board for cell in row), indexes = ([] if indexes == -1 else indexes), session_id=server_session_id)
+
+@app.route("/api/session-id")
+def get_session_id():
+    return jsonify({"session_id": server_session_id})
 
 @app.route("/move-bot", methods=["POST"])
 def move():
@@ -113,5 +118,7 @@ def reset():
     return render_template("reset.html",title="(Un)beatable crazy tic-tac-toe")
 
 if __name__=="__main__":
-    serve(app,host="0.0.0.0",port=8000, _quiet=True)
+    print("🎮 (Un)beatable crazy tic-tac-toe server starting...")
+    print("📍 Server running at http://0.0.0.0:8000")
+    serve(app,host="0.0.0.0", port=8000)
     # app.run(host="0.0.0.0",port=8000)

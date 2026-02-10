@@ -1,3 +1,9 @@
+(async () => {
+    await checkServerRestart()
+    restoreSavedCanvases()
+    buttonDeactivation()
+})()
+
 let drawing = []
 let currentId = undefined
 
@@ -16,6 +22,7 @@ function getPos(e,canvas) {
         y: e.clientY - rect.top
     }
 }
+
 function endStroke(ctx,ind) {
     if (!drawing[ind]) return
     drawing[ind] = false
@@ -213,6 +220,25 @@ function handleGameEnd(win,anyEmpty,indexes){
             }, 1500);        }
 }
 
+async function checkServerRestart() {
+    try {
+        const res = await fetch("/api/session-id");
+        const { session_id } = await res.json();
+        const stored_id = localStorage.getItem("ttt_session_id");
+        
+        if (stored_id && stored_id !== session_id.toString()) {
+            console.log("Server restarted detected - clearing canvas cache");
+            for (let i = 0; i < 9; i++) {
+                localStorage.removeItem(`ttt_canvas_${i}`);
+            }
+        }
+
+        localStorage.setItem("ttt_session_id", session_id.toString());
+    } catch(e) {
+        console.warn("Could not check session:", e);
+    }
+}
+
 canvases.forEach((canvas,ind)=>{
     ctx = canvas.getContext('2d')
     ctxes[ind] = ctx
@@ -221,8 +247,3 @@ canvases.forEach((canvas,ind)=>{
 
 cancelDrawingBtn.addEventListener("click",cancelDrawing)
 submitDrawingBtn.addEventListener("click",async _ => submitDrawing())
-
-restoreSavedCanvases()
-buttonDeactivation()
-
-
